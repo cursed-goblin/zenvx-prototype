@@ -20,6 +20,7 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   cd "$WORK/live"
 
   # live-build requires root privileges for bootstrap/chroot steps.
+  # Explicitly set security mirrors; Debian uses *bookworm-security* (not bookworm/updates).
   sudo lb config noauto \
     --mode debian \
     --distribution bookworm \
@@ -30,7 +31,13 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
     --bootappend-live "boot=live components quiet splash" \
     --iso-application "ZenvX Prototype" \
     --iso-publisher "ZenvX" \
-    --iso-volume "ZenvX-Bookworm-XFCE"
+    --iso-volume "ZenvX-Bookworm-XFCE" \
+    --mirror-binary "http://deb.debian.org/debian/" \
+    --mirror-binary-security "http://security.debian.org/debian-security" \
+    --mirror-binary-updates "http://deb.debian.org/debian/" \
+    --mirror-chroot "http://deb.debian.org/debian/" \
+    --mirror-chroot-security "http://security.debian.org/debian-security" \
+    --mirror-chroot-updates "http://deb.debian.org/debian/"
 
   sudo mkdir -p config/package-lists
   sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
