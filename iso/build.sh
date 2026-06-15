@@ -31,13 +31,14 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
     --iso-publisher "ZenvX" \
     --iso-volume "ZenvX-Bookworm-XFCE" \
     --mirror-binary "http://deb.debian.org/debian/" \
-    --mirror-chroot "http://deb.debian.org/debian/"
+    --mirror-chroot "http://deb.debian.org/debian/" \
+    --mirror-binary-security "http://deb.debian.org/debian-security" \
+    --mirror-chroot-security "http://deb.debian.org/debian-security"
 
   sudo mkdir -p config/package-lists
   sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
 
-  # Force correct sources.list inside the chroot BEFORE lb_chroot_apt runs.
-  # This prevents live-build from injecting the invalid 'bookworm/updates' security suite.
+  # Force correct sources.list inside the chroot
   sudo mkdir -p config/includes.chroot/etc/apt
   sudo install -m 0644 "$ROOT/iso/chroot-sources.list" config/includes.chroot/etc/apt/sources.list
 
