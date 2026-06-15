@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Syntax check
+        run: |
+          python -m compileall -q src
+
+      - name: Smoke test (offline runner)
+        env:
+          ZENVX_MOCK: '1'
+        run: |
+          PYTHONPATH=./src python -m zenvx doctor
+          PYTHONPATH=./src python -m zenvx list || true
+
+      - name: Lint workflow note
+        run: echo "Build completed (prototype offline mode)."

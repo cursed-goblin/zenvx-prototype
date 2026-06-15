@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=ZenvX
+Comment=Universal App Launcher (Prototype)
+Exec=zenvx
+Icon=application-x-executable
+Categories=Utility;System;
+Terminal=false
+StartupNotify=true
+X-ZenvX-Runtime=ZenvX

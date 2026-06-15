@@ -1,0 +1,12 @@
+Source: zenvx
+Section: utils
+Priority: optional
+Maintainer: ZenvX Prototype <devnull@example.invalid>
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools
+
+Package: zenvx
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: ZenvX prototype universal app launcher
+ Prototype launcher that unifies APK/EXE/AppImage/RPM via adapters.
