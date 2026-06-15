@@ -19,8 +19,8 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   mkdir -p "$WORK/live"
   cd "$WORK/live"
 
-  # Configure live-build for Debian Bookworm
-  lb config noauto \
+  # live-build requires root privileges for bootstrap/chroot steps.
+  sudo lb config noauto \
     --mode debian \
     --distribution bookworm \
     --architectures amd64 \
@@ -32,23 +32,23 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
     --iso-publisher "ZenvX" \
     --iso-volume "ZenvX-Bookworm-XFCE"
 
-  mkdir -p config/package-lists
-  cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
+  sudo mkdir -p config/package-lists
+  sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
 
   # Include the ZenvX repo in the live filesystem
-  mkdir -p config/includes.chroot/opt
-  rsync -a --delete \
+  sudo mkdir -p config/includes.chroot/opt
+  sudo rsync -a --delete \
     --exclude ".git" \
     --exclude "iso/work" \
     --exclude "iso/out" \
     "$ROOT/" "config/includes.chroot/opt/zenvx/"
 
   # Desktop entry
-  mkdir -p config/includes.chroot/usr/share/applications
-  cp "$ROOT/iso/zenvx-prototype.desktop" config/includes.chroot/usr/share/applications/zenvx-prototype.desktop
+  sudo mkdir -p config/includes.chroot/usr/share/applications
+  sudo cp "$ROOT/iso/zenvx-prototype.desktop" config/includes.chroot/usr/share/applications/zenvx-prototype.desktop
 
   # Build
-  lb build 2>&1 | tee "$LOG"
+  sudo lb build 2>&1 | tee "$LOG"
 
   # Move outputs
   ls -la
@@ -60,4 +60,4 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   fi
 
   echo "[OK] ISO build finished";
-} 
+}
