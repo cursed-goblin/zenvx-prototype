@@ -21,7 +21,6 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
 
   # live-build requires root privileges for bootstrap/chroot steps.
   # Keep mirrors explicit to avoid Debian security suite URL issues.
-  # NOTE: Some live-build versions do NOT support *-updates mirror flags.
   sudo lb config noauto \
     --mode debian \
     --distribution bookworm \
@@ -40,6 +39,10 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
 
   sudo mkdir -p config/package-lists
   sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
+
+  # Hook: fix security suite inside chroot
+  sudo mkdir -p config/hooks/normal
+  sudo install -m 0755 "$ROOT/iso/hooks/999-fix-security-repo.chroot" config/hooks/normal/999-fix-security-repo.chroot
 
   # Include the ZenvX repo in the live filesystem
   sudo mkdir -p config/includes.chroot/opt
