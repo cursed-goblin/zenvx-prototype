@@ -20,7 +20,6 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   cd "$WORK/live"
 
   # live-build requires root privileges for bootstrap/chroot steps.
-  # Keep mirrors explicit to avoid Debian security suite URL issues.
   sudo lb config noauto \
     --mode debian \
     --distribution bookworm \
@@ -40,7 +39,11 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   sudo mkdir -p config/package-lists
   sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
 
-  # Hook: fix security suite inside chroot
+  # Override archives early (before lb_chroot_apt runs)
+  sudo mkdir -p config/archives
+  sudo install -m 0644 "$ROOT/iso/archives/zz-security.list.chroot" config/archives/zz-security.list.chroot
+
+  # Hook: attempt to fix any remaining bad security suite entries
   sudo mkdir -p config/hooks/normal
   sudo install -m 0755 "$ROOT/iso/hooks/999-fix-security-repo.chroot" config/hooks/normal/999-fix-security-repo.chroot
 
