@@ -19,11 +19,6 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   mkdir -p "$WORK/live"
   cd "$WORK/live"
 
-  # live-build requires root privileges for bootstrap/chroot steps.
-  # IMPORTANT: On ubuntu-latest, live-build tends to generate a Debian security entry as:
-  #   deb http://security.debian.org/debian-security bookworm/updates ...
-  # which 404s for Bookworm (correct suite is bookworm-security).
-  # To avoid this, we do NOT set --mirror-*-security here; we inject the correct entry via config/archives.
   sudo lb config noauto \
     --mode debian \
     --distribution bookworm \
@@ -41,9 +36,10 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   sudo mkdir -p config/package-lists
   sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
 
-  # Provide correct security repo explicitly
-  sudo mkdir -p config/archives
-  sudo install -m 0644 "$ROOT/iso/archives/zz-security.list.chroot" config/archives/zz-security.list.chroot
+  # Force correct sources.list inside the chroot BEFORE lb_chroot_apt runs.
+  # This prevents live-build from injecting the invalid 'bookworm/updates' security suite.
+  sudo mkdir -p config/includes.chroot/etc/apt
+  sudo install -m 0644 "$ROOT/iso/chroot-sources.list" config/includes.chroot/etc/apt/sources.list
 
   # Include the ZenvX repo in the live filesystem
   sudo mkdir -p config/includes.chroot/opt
@@ -57,10 +53,8 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   sudo mkdir -p config/includes.chroot/usr/share/applications
   sudo cp "$ROOT/iso/zenvx-prototype.desktop" config/includes.chroot/usr/share/applications/zenvx-prototype.desktop
 
-  # Build
   sudo lb build 2>&1 | tee "$LOG"
 
-  # Move outputs
   ls -la
   if ls *.iso >/dev/null 2>&1; then
     mv -v *.iso "$OUT/"
