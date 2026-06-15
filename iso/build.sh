@@ -39,9 +39,9 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   sudo mkdir -p config/package-lists
   sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
 
-  # Override archives early (before lb_chroot_apt runs)
-  sudo mkdir -p config/archives
-  sudo install -m 0644 "$ROOT/iso/archives/zz-security.list.chroot" config/archives/zz-security.list.chroot
+  # Force correct sources.list inside the chroot (prevents bookworm/updates 404)
+  sudo mkdir -p config/includes.chroot/etc/apt
+  sudo install -m 0644 "$ROOT/iso/chroot-sources.list" config/includes.chroot/etc/apt/sources.list
 
   # Hook: attempt to fix any remaining bad security suite entries
   sudo mkdir -p config/hooks/normal
