@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=ZenvX (Prototype)
+Comment=Universal App Launcher (Prototype)
+Exec=env ZENVX_MOCK=1 PYTHONPATH=/opt/zenvx/src python3 -m zenvx gui
+Icon=application-x-executable
+Categories=Utility;System;
+Terminal=false
+StartupNotify=true
+X-ZenvX-Runtime=ZenvX

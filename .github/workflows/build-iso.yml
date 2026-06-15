@@ -1,0 +1,55 @@
+name: build-iso
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "iso/**"
+      - ".github/workflows/build-iso.yml"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  iso:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install live-build toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            live-build \
+            squashfs-tools \
+            xorriso \
+            isolinux \
+            syslinux-common \
+            syslinux-utils \
+            grub-pc-bin \
+            grub-efi-amd64-bin \
+            mtools \
+            dosfstools \
+            rsync \
+            ca-certificates
+
+      - name: Build ISO
+        run: |
+          bash iso/build.sh
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenvx-bookworm-xfce-iso
+          path: iso/out/*.iso
+          if-no-files-found: error
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenvx-iso-build-logs
+          path: iso/out/*.log
+          if-no-files-found: warn

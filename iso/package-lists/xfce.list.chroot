@@ -1,0 +1,20 @@
+# Minimal XFCE live environment + utilities
+xfce4
+xfce4-goodies
+lightdm
+network-manager
+network-manager-gnome
+
+# Useful basics
+sudo
+git
+python3
+python3-venv
+python3-pip
+sqlite3
+xdg-utils
+desktop-file-utils
+file
+
+# Optional: make AppImage easier on Debian
+libfuse2
