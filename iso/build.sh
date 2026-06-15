@@ -20,6 +20,10 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
   cd "$WORK/live"
 
   # live-build requires root privileges for bootstrap/chroot steps.
+  # IMPORTANT: On ubuntu-latest, live-build tends to generate a Debian security entry as:
+  #   deb http://security.debian.org/debian-security bookworm/updates ...
+  # which 404s for Bookworm (correct suite is bookworm-security).
+  # To avoid this, we do NOT set --mirror-*-security here; we inject the correct entry via config/archives.
   sudo lb config noauto \
     --mode debian \
     --distribution bookworm \
@@ -32,20 +36,14 @@ LOG="$OUT/build-$(date -u +%Y%m%dT%H%M%SZ).log"
     --iso-publisher "ZenvX" \
     --iso-volume "ZenvX-Bookworm-XFCE" \
     --mirror-binary "http://deb.debian.org/debian/" \
-    --mirror-binary-security "http://security.debian.org/debian-security" \
-    --mirror-chroot "http://deb.debian.org/debian/" \
-    --mirror-chroot-security "http://security.debian.org/debian-security"
+    --mirror-chroot "http://deb.debian.org/debian/"
 
   sudo mkdir -p config/package-lists
   sudo cp "$ROOT/iso/package-lists/xfce.list.chroot" config/package-lists/
 
-  # Force correct sources.list inside the chroot (prevents bookworm/updates 404)
-  sudo mkdir -p config/includes.chroot/etc/apt
-  sudo install -m 0644 "$ROOT/iso/chroot-sources.list" config/includes.chroot/etc/apt/sources.list
-
-  # Hook: attempt to fix any remaining bad security suite entries
-  sudo mkdir -p config/hooks/normal
-  sudo install -m 0755 "$ROOT/iso/hooks/999-fix-security-repo.chroot" config/hooks/normal/999-fix-security-repo.chroot
+  # Provide correct security repo explicitly
+  sudo mkdir -p config/archives
+  sudo install -m 0644 "$ROOT/iso/archives/zz-security.list.chroot" config/archives/zz-security.list.chroot
 
   # Include the ZenvX repo in the live filesystem
   sudo mkdir -p config/includes.chroot/opt
