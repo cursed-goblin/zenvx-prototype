@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+env:
+  # Opt into Node.js 24 for JS-based actions early
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,6 +18,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: Debug info
+        run: |
+          pwd
+          ls -la
+          python --version
 
       - name: Syntax check
         run: |
@@ -26,5 +36,5 @@ jobs:
           PYTHONPATH=./src python -m zenvx doctor
           PYTHONPATH=./src python -m zenvx list || true
 
-      - name: Lint workflow note
+      - name: Done
         run: echo "Build completed (prototype offline mode)."
